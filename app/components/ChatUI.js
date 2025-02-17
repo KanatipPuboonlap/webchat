@@ -9,7 +9,7 @@ import axios from "axios";
 
 export default function ChatUI() {
   const [messages, setMessages] = useState([
-    { text: "Hello! How can I assist you today?", sender: "bot" },
+    { text: "Hello World!", sender: "bot" },
   ]);
   const [input, setInput] = useState("");
   const [mode, setMode] = useState("tokenize"); // Default mode
@@ -29,6 +29,8 @@ export default function ChatUI() {
         endpoint = "textqa";
       } else if (mode === "en2th") {
         endpoint = "en2th";
+      } else if (mode === "th2en") {
+      endpoint = "th2en";
       }
 
       const response = await axios.post(`${API_URL}/${endpoint}`, {
@@ -42,6 +44,8 @@ export default function ChatUI() {
         setMessages((prev) => [...prev, { text: response.data.answer, sender: "bot" }]);
       } else if (mode === "en2th" && response.data.translate && response.data.translate.translated_text) {
         setMessages((prev) => [...prev, { text: response.data.translate.translated_text, sender: "bot" }]); // Updated line
+      } else if (mode === "th2en" && response.data.translate && response.data.translate.translated_text) {
+        setMessages((prev) => [...prev, { text: response.data.translate.translated_text, sender: "bot" }]);
       } else {
         setMessages((prev) => [...prev, { text: "Unexpected API response format", sender: "bot" }]);
       }
@@ -56,7 +60,8 @@ export default function ChatUI() {
       <div className="p-4 flex justify-center">
         <Button onClick={() => setMode("tokenize")} className={`mr-2 ${mode === "tokenize" ? "bg-blue-500 text-white" : "bg-gray-300"}`}>ตัดคำ</Button>
         <Button onClick={() => setMode("textqa")} className={`mr-2 ${mode === "textqa" ? "bg-blue-500 text-white" : "bg-gray-300"}`}>ถามตอบ</Button>
-        <Button onClick={() => setMode("en2th")} className={`${mode === "en2th" ? "bg-blue-500 text-white" : "bg-gray-300"}`}>แปลอังกฤษ</Button>
+        <Button onClick={() => setMode("en2th")} className={`mr-2 ${mode === "en2th" ? "bg-blue-500 text-white" : "bg-gray-300"}`}>แปลอังกฤษเป็นไทย</Button>
+        <Button onClick={() => setMode("th2en")} className={`${mode === "th2en" ? "bg-blue-500 text-white" : "bg-gray-300"}`}>แปลไทยเป็นอังกฤษ</Button>
       </div>
       <div className="flex-grow p-4 overflow-y-auto">
         {messages.map((msg, index) => (
